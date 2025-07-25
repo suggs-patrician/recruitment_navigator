@@ -2,7 +2,7 @@
 /media/
 /static/
 *.sqlite3
-
+*.log
 # Python and others
 __pycache__
 *.pyc

@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags %}
+
+{% block body_class %}template-jobindexpage{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Main container */
+    .job-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* Header */
+    .page-header {
+        margin-bottom: 30px;
+        border-bottom: 1px solid #eaeaea;
+        padding-bottom: 20px;
+    }
+
+    /* Filter section */
+    .filter-section {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 30px;
+    }
+
+    .filter-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-group select {
+        width: 100%;
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+    }
+
+    .filter-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .filter-buttons button {
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .filter-buttons .apply-btn {
+        background-color: #0056b3;
+        color: white;
+        border: none;
+    }
+
+    .filter-buttons .reset-btn {
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+    }
+
+    /* Job list */
+    .job-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .job-card {
+        border: 1px solid #eaeaea;
+        border-radius: 5px;
+        padding: 20px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .job-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .job-card h3 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: 18px;
+    }
+
+    .job-card-meta {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    .job-card-meta span {
+        display: inline-block;
+        margin-right: 15px;
+    }
+
+    .job-card-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 15px;
+    }
+
+    .job-tag {
+        background-color: #e9f5ff;
+        color: #0056b3;
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 12px;
+    }
+
+    /* Pagination */
+    .pagination {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .pagination a {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        text-decoration: none;
+        color: #333;
+    }
+
+    .pagination a.active {
+        background-color: #0056b3;
+        color: white;
+        border-color: #0056b3;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .job-list {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="job-container">
+    <div class="page-header">
+        <h1>{{ page.title }}</h1>
+        {% if page.intro %}
+            <div class="intro">{{ page.intro|richtext }}</div>
+        {% endif %}
+    </div>
+
+    <div class="filter-section">
+        <form method="get" action="{% url 'wagtail_serve' page.url.relative_path %}">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="category">职位类别</label>
+                    <select name="category" id="category">
+                        <option value="">全部类别</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"i" %}selected{% endif %}>
+                                {{ category }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="region">地区</label>
+                    <select name="region" id="region">
+                        <option value="">全部地区</option>
+                        {% for region in regions %}
+                            <option value="{{ region.id }}" {% if request.GET.region == region.id|stringformat:"i" %}selected{% endif %}>
+                                {{ region }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="tag">标签</label>
+                    <input type="text" name="tag" id="tag" value="{{ request.GET.tag|default:'' }}" placeholder="输入标签关键词">
+                </div>
+            </div>
+            
+            <div class="filter-buttons">
+                <button type="reset" class="reset-btn">重置</button>
+                <button type="submit" class="apply-btn">应用筛选</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="job-list">
+        {% for job in job_posts %}
+            <div class="job-card">
+                <h3><a href="{% pageurl job %}">{{ job.title }}</a></h3>
+                <div class="job-card-meta">
+                    <span>{{ job.category }}</span>
+                    <span>{{ job.region }}</span>
+                    <span>发布日期: {{ job.publication_date|date:"Y-m-d" }}</span>
+                    {% if job.deadline %}
+                        <span>截止日期: {{ job.deadline|date:"Y-m-d" }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="job-card-tags">
+                    {% for tag in job.tags.all %}
+                        <span class="job-tag">{{ tag }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        {% empty %}
+            <p>暂无符合条件的招聘信息</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

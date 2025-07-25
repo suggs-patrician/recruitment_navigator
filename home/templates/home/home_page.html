@@ -1,0 +1,383 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags %}
+
+{% block body_class %}template-homepage{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hero section */
+    .hero {
+        background-color: #1a2a3a;
+        color: white;
+        padding: 80px 0;
+        text-align: center;
+    }
+    
+    .hero-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+    }
+    
+    .hero p {
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+        color: #ccc;
+    }
+    
+    .search-box {
+        max-width: 600px;
+        margin: 0 auto;
+        display: flex;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    
+    .search-box input {
+        flex: 1;
+        padding: 15px;
+        border: none;
+        font-size: 16px;
+    }
+    
+    .search-box button {
+        background-color: #0056b3;
+        color: white;
+        border: none;
+        padding: 0 25px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    
+    /* Categories section */
+    .categories {
+        padding: 60px 0;
+        background-color: #f9f9f9;
+    }
+    
+    .categories-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .categories h2 {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 30px;
+    }
+    
+    .category-card {
+        background-color: white;
+        border-radius: 5px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        padding: 30px;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .category-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+    
+    .category-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        color: #0056b3;
+    }
+    
+    .category-card h3 {
+        margin-bottom: 15px;
+    }
+    
+    .category-card p {
+        color: #666;
+        margin-bottom: 20px;
+    }
+    
+    .category-card a {
+        display: inline-block;
+        padding: 8px 20px;
+        background-color: #f0f0f0;
+        color: #333;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+    }
+    
+    .category-card a:hover {
+        background-color: #e0e0e0;
+    }
+    
+    /* Recent jobs section */
+    .recent-jobs {
+        padding: 60px 0;
+    }
+    
+    .recent-jobs-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .recent-jobs h2 {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .jobs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 30px;
+    }
+    
+    .job-card {
+        background-color: white;
+        border-radius: 5px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        padding: 20px;
+        transition: transform 0.3s ease;
+    }
+    
+    .job-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .job-card h3 {
+        margin-top: 0;
+        margin-bottom: 10px;
+    }
+    
+    .job-card h3 a {
+        color: #0056b3;
+        text-decoration: none;
+    }
+    
+    .job-card h3 a:hover {
+        text-decoration: underline;
+    }
+    
+    .job-meta {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+    
+    .job-meta span {
+        display: inline-block;
+        margin-right: 15px;
+    }
+    
+    .job-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 15px;
+    }
+    
+    .job-tag {
+        background-color: #e9f5ff;
+        color: #0056b3;
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 12px;
+    }
+    
+    .view-all {
+        text-align: center;
+        margin-top: 40px;
+    }
+    
+    .view-all a {
+        display: inline-block;
+        padding: 10px 25px;
+        background-color: #0056b3;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+    }
+    
+    .view-all a:hover {
+        background-color: #003d82;
+    }
+    
+    /* Regions section */
+    .regions {
+        padding: 60px 0;
+        background-color: #f9f9f9;
+    }
+    
+    .regions-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .regions h2 {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .regions-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+    
+    .region-item {
+        background-color: white;
+        padding: 10px 20px;
+        border-radius: 30px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .region-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .region-item a {
+        color: #333;
+        text-decoration: none;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero h1 {
+            font-size: 2rem;
+        }
+        
+        .hero p {
+            font-size: 1rem;
+        }
+        
+        .category-grid, .jobs-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock extra_css %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-container">
+        <h1>找到您理想的工作</h1>
+        <p>浏览最新的政府机关、事业单位、国企和银行招聘信息</p>
+        
+        <form action="{% url 'search' %}" method="get" class="search-box">
+            <input type="text" name="query" placeholder="输入职位、地区、单位名称等关键词...">
+            <button type="submit"><i class="fas fa-search"></i> 搜索</button>
+        </form>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories">
+    <div class="categories-container">
+        <h2>按类别浏览</h2>
+        
+        <div class="category-grid">
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-landmark"></i>
+                </div>
+                <h3>政府机关</h3>
+                <p>各级政府部门、机关单位的招聘信息</p>
+                <a href="/jobs/?category=government">查看职位</a>
+            </div>
+            
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-school"></i>
+                </div>
+                <h3>事业单位</h3>
+                <p>教育、医疗、科研等事业单位的招聘信息</p>
+                <a href="/jobs/?category=institution">查看职位</a>
+            </div>
+            
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <h3>国企</h3>
+                <p>各类国有企业的招聘信息</p>
+                <a href="/jobs/?category=state_owned">查看职位</a>
+            </div>
+            
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-university"></i>
+                </div>
+                <h3>银行</h3>
+                <p>各大银行及金融机构的招聘信息</p>
+                <a href="/jobs/?category=bank">查看职位</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Jobs Section -->
+<section class="recent-jobs">
+    <div class="recent-jobs-container">
+        <h2>最新招聘信息</h2>
+        
+        <div class="jobs-grid">
+            {% for job in recent_jobs %}
+                <div class="job-card">
+                    <h3><a href="{% pageurl job %}">{{ job.title }}</a></h3>
+                    <div class="job-meta">
+                        <span><i class="fas fa-building"></i> {{ job.category }}</span>
+                        <span><i class="fas fa-map-marker-alt"></i> {{ job.region }}</span>
+                        <span><i class="fas fa-calendar"></i> {{ job.publication_date|date:"Y-m-d" }}</span>
+                    </div>
+                    
+                    <div class="job-tags">
+                        {% for tag in job.tags.all %}
+                            <span class="job-tag">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% empty %}
+                <p>暂无招聘信息</p>
+            {% endfor %}
+        </div>
+        
+        <div class="view-all">
+            <a href="/jobs/">查看全部招聘信息</a>
+        </div>
+    </div>
+</section>
+
+<!-- Regions Section -->
+<section class="regions">
+    <div class="regions-container">
+        <h2>按地区浏览</h2>
+        
+        <div class="regions-list">
+            {% for region in regions %}
+                <div class="region-item">
+                    <a href="/jobs/?region={{ region.id }}">{{ region.name }}</a>
+                </div>
+            {% empty %}
+                <p>暂无地区信息</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock content %}

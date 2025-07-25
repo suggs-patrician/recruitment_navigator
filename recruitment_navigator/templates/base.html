@@ -1,0 +1,217 @@
+{% load static wagtailcore_tags wagtailuserbar %}
+
+<!DOCTYPE html>
+<html lang="zh-hans">
+    <head>
+        <meta charset="utf-8" />
+        <title>
+            {% block title %}
+            {% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }}{% endif %}
+            {% endblock %}
+            {% block title_suffix %}
+            {% wagtail_site as current_site %}
+            {% if current_site and current_site.site_name %}- {{ current_site.site_name }}{% endif %}
+            {% endblock %}
+        </title>
+        {% if page.search_description %}
+        <meta name="description" content="{{ page.search_description }}" />
+        {% endif %}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        {# Force all links in the live preview panel to be opened in a new tab #}
+        {% if request.in_preview_panel %}
+        <base target="_blank">
+        {% endif %}
+
+        {# Global stylesheets #}
+        <link rel="stylesheet" type="text/css" href="{% static 'css/recruitment_navigator.css' %}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        
+        <style>
+            /* Global styles */
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                background-color: #f9f9f9;
+                margin: 0;
+                padding: 0;
+            }
+            
+            /* Header */
+            .site-header {
+                background-color: #1a2a3a;
+                color: white;
+                padding: 15px 0;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+            
+            .header-container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .site-logo {
+                font-size: 24px;
+                font-weight: bold;
+                text-decoration: none;
+                color: white;
+            }
+            
+            .site-nav ul {
+                list-style: none;
+                display: flex;
+                gap: 20px;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .site-nav a {
+                color: white;
+                text-decoration: none;
+                padding: 5px 10px;
+                border-radius: 4px;
+                transition: background-color 0.3s;
+            }
+            
+            .site-nav a:hover {
+                background-color: rgba(255,255,255,0.1);
+            }
+            
+            /* Footer */
+            .site-footer {
+                background-color: #1a2a3a;
+                color: #ccc;
+                padding: 30px 0;
+                margin-top: 50px;
+            }
+            
+            .footer-container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 30px;
+            }
+            
+            .footer-section h3 {
+                color: white;
+                margin-top: 0;
+                margin-bottom: 15px;
+                font-size: 18px;
+            }
+            
+            .footer-section ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .footer-section li {
+                margin-bottom: 8px;
+            }
+            
+            .footer-section a {
+                color: #ccc;
+                text-decoration: none;
+            }
+            
+            .footer-section a:hover {
+                color: white;
+                text-decoration: underline;
+            }
+            
+            .footer-bottom {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+                border-top: 1px solid #444;
+                margin-top: 20px;
+                text-align: center;
+                font-size: 14px;
+            }
+            
+            /* Responsive */
+            @media (max-width: 768px) {
+                .header-container {
+                    flex-direction: column;
+                    gap: 15px;
+                }
+                
+                .site-nav ul {
+                    flex-wrap: wrap;
+                    justify-content: center;
+                }
+            }
+        </style>
+
+        {% block extra_css %}
+        {# Override this in templates to add extra stylesheets #}
+        {% endblock %}
+    </head>
+
+    <body class="{% block body_class %}{% endblock %}">
+        {% wagtailuserbar %}
+        
+        <header class="site-header">
+            <div class="header-container">
+                <a href="/" class="site-logo">招聘信息导航</a>
+                <nav class="site-nav">
+                    <ul>
+                        <li><a href="/">首页</a></li>
+                        <li><a href="/jobs/">招聘信息</a></li>
+                        <li><a href="/search/">搜索</a></li>
+                        <li><a href="/about/">关于我们</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        {% block content %}{% endblock %}
+        
+        <footer class="site-footer">
+            <div class="footer-container">
+                <div class="footer-section">
+                    <h3>招聘信息导航</h3>
+                    <p>提供最新的政府机关、事业单位、国企、银行招聘信息</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>快速链接</h3>
+                    <ul>
+                        <li><a href="/">首页</a></li>
+                        <li><a href="/jobs/">招聘信息</a></li>
+                        <li><a href="/search/">搜索</a></li>
+                        <li><a href="/about/">关于我们</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>职位类别</h3>
+                    <ul>
+                        <li><a href="/jobs/?category=government">政府机关</a></li>
+                        <li><a href="/jobs/?category=institution">事业单位</a></li>
+                        <li><a href="/jobs/?category=state_owned">国企</a></li>
+                        <li><a href="/jobs/?category=bank">银行</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; {% now "Y" %} 招聘信息导航. 保留所有权利.</p>
+            </div>
+        </footer>
+
+        {# Global javascript #}
+        <script type="text/javascript" src="{% static 'js/recruitment_navigator.js' %}"></script>
+
+        {% block extra_js %}
+        {# Override this in templates to add extra javascript #}
+        {% endblock %}
+    </body>
+</html>

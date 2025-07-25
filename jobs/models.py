@@ -126,9 +126,13 @@ class JobIndexPage(Page):
         job_posts = JobPost.objects.live().descendant_of(self).order_by('-publication_date')
         
         # Filter by category
-        category_id = request.GET.get('category')
-        if category_id:
-            job_posts = job_posts.filter(category_id=category_id)
+        category_param = request.GET.get('category')
+        if category_param:
+            # 支持按category名称或ID过滤
+            if category_param.isdigit():
+                job_posts = job_posts.filter(category_id=category_param)
+            else:
+                job_posts = job_posts.filter(category__name=category_param)
         
         # Filter by region
         region_id = request.GET.get('region')

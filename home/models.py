@@ -2,6 +2,7 @@ from django.db import models
 
 from wagtail.models import Page
 from wagtail.admin.panels import FieldPanel
+from wagtail.fields import RichTextField
 
 from jobs.models import JobPost, Region
 
@@ -20,3 +21,16 @@ class HomePage(Page):
     
     class Meta:
         verbose_name = "首页"
+
+
+class AboutPage(Page):
+    intro = RichTextField(blank=True, verbose_name="简介")
+    body = RichTextField(blank=True, verbose_name="内容")
+    
+    content_panels = Page.content_panels + [
+        FieldPanel('intro'),
+        FieldPanel('body'),
+    ]
+    
+    class Meta:
+        verbose_name = "关于我们页面"

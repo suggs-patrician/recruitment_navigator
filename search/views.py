@@ -17,7 +17,22 @@ def search(request):
 
     # Search
     if search_query:
+        # 首先尝试Wagtail的搜索
         search_results = Page.objects.live().search(search_query)
+        
+        # 如果Wagtail搜索没有结果，尝试简单的数据库查询
+        if not search_results:
+            from jobs.models import JobPost
+            from django.db.models import Q
+            
+            job_results = JobPost.objects.live().filter(
+                Q(title__icontains=search_query) |
+                Q(description__icontains=search_query) |
+                Q(requirements__icontains=search_query)
+            )
+            
+            # 将JobPost结果转换为Page结果
+            search_results = job_results
 
         # To log this query for use with the "Promoted search results" module:
 

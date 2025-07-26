@@ -77,7 +77,7 @@ def register_step1(request):
             send_verification_email(email, verification.code)
             
             # Redirect to verification page
-            return redirect(reverse('verify_email') + f'?email={email}')
+            return redirect(reverse('accounts:verify_email') + f'?email={email}')
     else:
         form = RegistrationForm()
     
@@ -106,7 +106,7 @@ def verify_email(request):
             verification.save()
             
             # Redirect to complete registration
-            return redirect(reverse('complete_registration') + f'?email={email}')
+            return redirect(reverse('accounts:complete_registration') + f'?email={email}')
     else:
         form = VerificationCodeForm(initial={'email': email})
     

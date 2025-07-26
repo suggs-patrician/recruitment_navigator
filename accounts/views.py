@@ -17,7 +17,7 @@ def login_view(request):
     Handle user login
     """
     if request.user.is_authenticated:
-        return redirect('home')
+        return redirect('/')
     
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
@@ -55,7 +55,7 @@ def logout_view(request):
     """
     logout(request)
     messages.info(request, '您已成功退出登录')
-    return redirect('home')
+    return redirect('/')
 
 
 def register_step1(request):
@@ -63,7 +63,7 @@ def register_step1(request):
     Step 1 of registration: Email verification
     """
     if request.user.is_authenticated:
-        return redirect('home')
+        return redirect('/')
     
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
@@ -89,7 +89,7 @@ def verify_email(request):
     Step 2 of registration: Verify email with code
     """
     if request.user.is_authenticated:
-        return redirect('home')
+        return redirect('/')
     
     email = request.GET.get('email', '')
     if not email:
@@ -118,7 +118,7 @@ def complete_registration(request):
     Step 3 of registration: Complete user registration
     """
     if request.user.is_authenticated:
-        return redirect('home')
+        return redirect('/')
     
     email = request.GET.get('email', '')
     if not email:

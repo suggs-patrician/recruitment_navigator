@@ -80,7 +80,7 @@
             updateButtonText();
             
             // Send AJAX request to resend verification code
-            fetch('{% url "resend_verification" %}', {
+            fetch('{% url "accounts:resend_verification" %}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

@@ -109,6 +109,14 @@
                 box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
             }
             
+            .user-welcome {
+                color: white;
+                font-weight: 500;
+                margin-right: 15px;
+                display: flex;
+                align-items: center;
+            }
+            
             .site-logo {
                 font-size: 28px;
                 font-weight: 700;
@@ -398,8 +406,13 @@
                     </ul>
                 </nav>
                 <div class="header-actions">
-                    <a href="#" class="btn-login">登录</a>
-                    <a href="#" class="btn-register">注册</a>
+                    {% if user.is_authenticated %}
+                        <span class="user-welcome">欢迎，{{ user.username }}</span>
+                        <a href="{% url 'accounts:logout' %}" class="btn-login">退出</a>
+                    {% else %}
+                        <a href="{% url 'accounts:login' %}" class="btn-login">登录</a>
+                        <a href="{% url 'accounts:register' %}" class="btn-register">注册</a>
+                    {% endif %}
                     <a href="#subscription" class="btn-cta">免费试用</a>
                 </div>
             </div>

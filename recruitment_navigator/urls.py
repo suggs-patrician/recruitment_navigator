@@ -15,6 +15,9 @@ urlpatterns = [
     path("documents/", include(wagtaildocs_urls)),
     path("search/", search_views.search, name="search"),
     
+    # Accounts URLs
+    path("accounts/", include("accounts.urls")),
+    
     # Jobs API endpoints
     path("api/regions/provinces/", jobs_views.get_provinces, name="api_provinces"),
     path("api/regions/cities/", jobs_views.get_cities, name="api_cities"),

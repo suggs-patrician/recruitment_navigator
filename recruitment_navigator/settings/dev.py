@@ -11,8 +11,8 @@ ALLOWED_HOSTS = ["*"]
 
 # CSRF settings
 CSRF_TRUSTED_ORIGINS = [
-    "https://work-1-oirmxjpzsyplbhwd.prod-runtime.all-hands.dev",
-    "https://work-2-oirmxjpzsyplbhwd.prod-runtime.all-hands.dev",
+    "https://work-1-rvfwjuuricmdoozn.prod-runtime.all-hands.dev",
+    "https://work-2-rvfwjuuricmdoozn.prod-runtime.all-hands.dev",
 ]
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

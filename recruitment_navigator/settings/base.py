@@ -205,3 +205,9 @@ EMAIL_SUBJECT_PREFIX = '[招聘导航] '
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+# CSRF settings
+CSRF_TRUSTED_ORIGINS = [
+    'https://work-1-rvfwjuuricmdoozn.prod-runtime.all-hands.dev',
+    'https://work-2-rvfwjuuricmdoozn.prod-runtime.all-hands.dev',
+]

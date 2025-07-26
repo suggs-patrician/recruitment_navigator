@@ -99,3 +99,10 @@ class CompleteRegistrationForm(UserCreationForm):
         if User.objects.filter(username=username).exists():
             raise ValidationError('该用户名已被使用，请选择其他用户名')
         return username
+    
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        # Email is already set in the form data
+        if commit:
+            user.save()
+        return user

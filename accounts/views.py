@@ -131,13 +131,14 @@ def complete_registration(request):
         return redirect('register')
     
     if request.method == 'POST':
-        form = CompleteRegistrationForm(request.POST)
-        form.initial = {'email': email}
+        # Add email to POST data
+        post_data = request.POST.copy()
+        post_data['email'] = email
+        form = CompleteRegistrationForm(post_data)
         
         if form.is_valid():
-            user = form.save(commit=False)
-            user.email = email
-            user.save()
+            # Save the user with proper password hashing
+            user = form.save()
             
             # Log the user in
             login(request, user)

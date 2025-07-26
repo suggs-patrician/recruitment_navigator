@@ -385,6 +385,25 @@
                     padding: 40px 0 20px;
                 }
             }
+            #auth-modal-mask {
+                position: fixed; left: 0; top: 0; width: 100vw; height: 100vh;
+                background: rgba(0,0,0,0.35); z-index: 2000; display: none;
+            }
+            #auth-modal {
+                position: fixed; left: 50%; top: 50%; transform: translate(-50%,-50%);
+                background: #fff; border-radius: 16px; box-shadow: 0 8px 40px rgba(0,82,217,0.18);
+                z-index: 2100; min-width: 340px; max-width: 95vw; width: 400px; max-height: 95vh; overflow-y: auto;
+                display: none; padding: 0; outline: none;
+            }
+            #auth-modal-content { padding: 0; }
+            #auth-modal-close {
+                position: absolute; top: 10px; right: 18px; background: none; border: none; font-size: 2rem; color: #888; cursor: pointer; z-index: 2200;
+                transition: color 0.2s;
+            }
+            #auth-modal-close:hover { color: #FF9900; }
+            @media (max-width: 600px) {
+                #auth-modal { width: 98vw; min-width: 0; border-radius: 0; top: 0; left: 0; transform: none; max-height: 100vh; }
+            }
         </style>
 
         {% block extra_css %}
@@ -466,5 +485,116 @@
         {% block extra_js %}
         {# Override this in templates to add extra javascript #}
         {% endblock %}
+
+        <div id="auth-modal-mask" style="display:none;"></div>
+        <div id="auth-modal" style="display:none;" tabindex="-1">
+            <div id="auth-modal-content"></div>
+            <button id="auth-modal-close" aria-label="关闭" type="button">&times;</button>
+        </div>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function showAuthModal(type, extraParams) {
+                const modal = document.getElementById('auth-modal');
+                const mask = document.getElementById('auth-modal-mask');
+                const content = document.getElementById('auth-modal-content');
+                let url = '';
+                if (type === 'login') url = '{% url 'accounts:login' %}';
+                if (type === 'register') url = '{% url 'accounts:register' %}';
+                if (type === 'verify_email') url = '{% url 'accounts:verify_email' %}';
+                if (type === 'complete_registration') url = '{% url 'accounts:complete_registration' %}';
+                if (extraParams) url += extraParams;
+                fetch(url, {headers: {'X-Requested-With': 'XMLHttpRequest'}})
+                    .then(r => r.text())
+                    .then(html => {
+                        content.innerHTML = html;
+                        modal.style.display = mask.style.display = 'block';
+                        modal.focus();
+                        // 绑定表单提交事件
+                        bindFormSubmitEvents();
+                    });
+            }
+            function closeAuthModal() {
+                document.getElementById('auth-modal').style.display = 'none';
+                document.getElementById('auth-modal-mask').style.display = 'none';
+                document.getElementById('auth-modal-content').innerHTML = '';
+            }
+            function bindFormSubmitEvents() {
+                const form = document.querySelector('#auth-modal-content form');
+                if (form) {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const formData = new FormData(form);
+                        const submitBtn = form.querySelector('button[type="submit"]');
+                        const originalText = submitBtn.textContent;
+                        submitBtn.disabled = true;
+                        submitBtn.textContent = '处理中...';
+                        
+                        fetch(form.action || window.location.pathname, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                            }
+                        })
+                        .then(response => {
+                            if (response.redirected) {
+                                // 登录成功，关闭弹窗并刷新页面
+                                closeAuthModal();
+                                window.location.reload();
+                                return;
+                            }
+                            // 检查是否是JSON响应（登录成功）
+                            const contentType = response.headers.get('content-type');
+                            if (contentType && contentType.includes('application/json')) {
+                                return response.json().then(data => {
+                                    if (data.success) {
+                                        // 登录成功，关闭弹窗并刷新页面
+                                        closeAuthModal();
+                                        window.location.reload();
+                                        return null;
+                                    }
+                                    return response.text();
+                                });
+                            }
+                            return response.text();
+                        })
+                        .then(html => {
+                            if (html) {
+                                // 更新弹窗内容（显示错误信息或下一步）
+                                document.getElementById('auth-modal-content').innerHTML = html;
+                                bindFormSubmitEvents(); // 重新绑定事件
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('提交失败，请稍后重试');
+                        })
+                        .finally(() => {
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = originalText;
+                        });
+                    });
+                }
+            }
+            document.querySelectorAll('.btn-login').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault(); showAuthModal('login');
+                });
+            });
+            document.querySelectorAll('.btn-register').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault(); showAuthModal('register');
+                });
+            });
+            document.getElementById('auth-modal-close').onclick = closeAuthModal;
+            document.getElementById('auth-modal-mask').onclick = closeAuthModal;
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeAuthModal();
+            });
+            // 将showAuthModal暴露到全局，供模板中的链接使用
+            window.showAuthModal = showAuthModal;
+        });
+        </script>
     </body>
 </html>

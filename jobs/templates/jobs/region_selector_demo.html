@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}地区选择器演示{% endblock %}
+
+{% block extra_css %}
+<style>
+    .region-selector {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #333;
+    }
+    
+    .form-group select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    
+    .form-group select:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+    }
+    
+    .result {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #e9ecef;
+        border-radius: 4px;
+        border-left: 4px solid #007bff;
+    }
+    
+    .result h4 {
+        margin-top: 0;
+        color: #007bff;
+    }
+    
+    .btn {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    
+    .btn:hover {
+        background-color: #0056b3;
+    }
+    
+    .loading {
+        color: #666;
+        font-style: italic;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="region-selector">
+    <h2>三级地区联动选择器演示</h2>
+    
+    <form id="region-form">
+        <div class="form-group">
+            <label for="province-select">省份：</label>
+            <select id="province-select" name="province">
+                <option value="">请选择省份</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="city-select">城市：</label>
+            <select id="city-select" name="city">
+                <option value="">请选择城市</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="county-select">县区：</label>
+            <select id="county-select" name="county">
+                <option value="">请选择县区</option>
+            </select>
+        </div>
+        
+        <button type="button" class="btn" onclick="showSelectedRegion()">获取选中地区</button>
+    </form>
+    
+    <div id="result" class="result" style="display: none;">
+        <h4>选中结果：</h4>
+        <div id="result-content"></div>
+    </div>
+</div>
+
+<script src="/static/js/region_selector.js"></script>
+<script>
+function showSelectedRegion() {
+    const resultDiv = document.getElementById('result');
+    const resultContent = document.getElementById('result-content');
+    
+    if (window.regionSelector) {
+        const selectedRegion = window.regionSelector.getSelectedRegion();
+        
+        if (selectedRegion) {
+            resultContent.innerHTML = `
+                <p><strong>层级：</strong>${selectedRegion.level === 'province' ? '省份' : selectedRegion.level === 'city' ? '城市' : '县区'}</p>
+                <p><strong>ID：</strong>${selectedRegion.id}</p>
+            `;
+        } else {
+            resultContent.innerHTML = '<p class="loading">请先选择一个地区</p>';
+        }
+        
+        resultDiv.style.display = 'block';
+    } else {
+        resultContent.innerHTML = '<p class="loading">地区选择器未初始化</p>';
+        resultDiv.style.display = 'block';
+    }
+}
+</script>
+{% endblock %} 

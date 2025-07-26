@@ -7,12 +7,24 @@ from wagtail import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
 from search import views as search_views
+from jobs import views as jobs_views
 
 urlpatterns = [
     path("django-admin/", admin.site.urls),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
     path("search/", search_views.search, name="search"),
+    
+    # Jobs API endpoints
+    path("api/regions/provinces/", jobs_views.get_provinces, name="api_provinces"),
+    path("api/regions/cities/", jobs_views.get_cities, name="api_cities"),
+    path("api/regions/counties/", jobs_views.get_counties, name="api_counties"),
+    path("api/regions/info/", jobs_views.get_region_info, name="api_region_info"),
+    path("api/recent-jobs/", jobs_views.get_recent_jobs, name="api_recent_jobs"),
+    path("api/subscribe/", jobs_views.subscribe, name="api_subscribe"),
+    
+    # Demo page
+    path("demo/region-selector/", jobs_views.region_selector_demo, name="region_selector_demo"),
 ]
 
 

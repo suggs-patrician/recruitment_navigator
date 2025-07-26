@@ -14,8 +14,8 @@ class HomePage(Page):
         # Get recent job posts
         context['recent_jobs'] = JobPost.objects.live().order_by('-publication_date')[:6]
         
-        # Get top-level regions
-        context['regions'] = Region.objects.filter(parent__isnull=True)
+        # Get provinces only
+        context['regions'] = Region.objects.filter(level='province')
         
         return context
     
@@ -34,3 +34,4 @@ class AboutPage(Page):
     
     class Meta:
         verbose_name = "关于我们页面"
+

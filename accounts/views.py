@@ -38,15 +38,20 @@ def login_view(request):
                 login(request, user)
                 messages.success(request, f'欢迎回来，{user.username}！')
                 
-                # Redirect to the page user was trying to access, or home
-                next_page = request.GET.get('next', 'home')
+                # For AJAX requests, return JSON response
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'success': True, 'message': '登录成功'})
+                
+                # For regular requests, redirect
+                next_page = request.GET.get('next', '/')
                 return redirect(next_page)
         else:
             messages.error(request, '登录失败，请检查用户名和密码')
     else:
         form = LoginForm()
     
-    return render(request, 'accounts/login.html', {'form': form})
+    template = 'accounts/login_form.html' if request.headers.get('x-requested-with') == 'XMLHttpRequest' else 'accounts/login.html'
+    return render(request, template, {'form': form})
 
 
 def logout_view(request):
@@ -81,7 +86,8 @@ def register_step1(request):
     else:
         form = RegistrationForm()
     
-    return render(request, 'accounts/register_step1.html', {'form': form})
+    template = 'accounts/register_step1_form.html' if request.headers.get('x-requested-with') == 'XMLHttpRequest' else 'accounts/register_step1.html'
+    return render(request, template, {'form': form})
 
 
 def verify_email(request):
@@ -100,17 +106,13 @@ def verify_email(request):
         form.initial = {'email': email}
         
         if form.is_valid():
-            # Mark verification code as used
-            verification = EmailVerificationCode.objects.get(email=email)
-            verification.is_used = True
-            verification.save()
-            
-            # Redirect to complete registration
+            # 验证通过，跳转到完成注册
             return redirect(reverse('accounts:complete_registration') + f'?email={email}')
     else:
         form = VerificationCodeForm(initial={'email': email})
     
-    return render(request, 'accounts/verify_email.html', {'form': form, 'email': email})
+    template = 'accounts/verify_email_form.html' if request.headers.get('x-requested-with') == 'XMLHttpRequest' else 'accounts/verify_email.html'
+    return render(request, template, {'form': form, 'email': email})
 
 
 def complete_registration(request):
@@ -137,17 +139,8 @@ def complete_registration(request):
         form = CompleteRegistrationForm(post_data)
         
         if form.is_valid():
-            # Debug: Print form data
-            print(f"Form cleaned_data: {form.cleaned_data}")
-            print(f"Password1: {form.cleaned_data.get('password1')}")
-            print(f"Password2: {form.cleaned_data.get('password2')}")
-            
             # Save the user with proper password hashing
             user = form.save()
-            
-            # Debug: Check password after save
-            print(f"User password hash: {user.password}")
-            print(f"Password check: {user.check_password(form.cleaned_data.get('password1'))}")
             
             # Log the user in
             login(request, user)
@@ -156,7 +149,8 @@ def complete_registration(request):
     else:
         form = CompleteRegistrationForm(initial={'email': email})
     
-    return render(request, 'accounts/complete_registration.html', {'form': form})
+    template = 'accounts/complete_registration_form.html' if request.headers.get('x-requested-with') == 'XMLHttpRequest' else 'accounts/complete_registration.html'
+    return render(request, template, {'form': form})
 
 
 @require_POST

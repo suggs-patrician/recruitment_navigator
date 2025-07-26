@@ -142,7 +142,7 @@ def complete_registration(request):
             # Log the user in
             login(request, user)
             messages.success(request, f'注册成功！欢迎加入，{user.username}！')
-            return redirect('home')
+            return redirect('/')
     else:
         form = CompleteRegistrationForm(initial={'email': email})
     

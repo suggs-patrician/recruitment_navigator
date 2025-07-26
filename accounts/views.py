@@ -137,8 +137,17 @@ def complete_registration(request):
         form = CompleteRegistrationForm(post_data)
         
         if form.is_valid():
+            # Debug: Print form data
+            print(f"Form cleaned_data: {form.cleaned_data}")
+            print(f"Password1: {form.cleaned_data.get('password1')}")
+            print(f"Password2: {form.cleaned_data.get('password2')}")
+            
             # Save the user with proper password hashing
             user = form.save()
+            
+            # Debug: Check password after save
+            print(f"User password hash: {user.password}")
+            print(f"Password check: {user.check_password(form.cleaned_data.get('password1'))}")
             
             # Log the user in
             login(request, user)
